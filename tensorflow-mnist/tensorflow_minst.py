@@ -78,23 +78,34 @@ class MNIST:
         return
 
     def train_network(self):
-        self.model.fit(x=self.x_train, y=self.y_train, epochs=1)
+        self.model.fit(x=self.x_train, y=self.y_train, epochs=5)
         return
 
     def evaluate_network(self):
         return self.model.evaluate(self.x_test, self.y_test)
 
+    def save_network(self,filename):
+        return self.model.save(filename)
+
+    def load_network(self,filename):
+        self.model = keras.models.load_model(filename)
+        return
+    
 def main():
     mnist = MNIST()
 
     # reshape and normalize the data
     prepare_data = True
     # create network
-    create_network = True
+    create_network = False
     # train network
-    train_network = True
+    train_network = False
     # evaluate network
     evaluate_network = True
+    # save network
+    save_network = False
+    # load network
+    load_network = True
 
     # images and answers
     show_training_data = False
@@ -112,11 +123,18 @@ def main():
 
     if train_network:
         mnist.train_network()
+
+    if save_network:
+        mnist.save_network('mnist-model.h5')
+
+    if load_network:
+        mnist.load_network('mnist-model.h5')
     
     if evaluate_network:
         loss, accuracy = mnist.evaluate_network()
         print("loss: ", loss)
         print("accuracy: ", accuracy)
+
     
     if show_training_data:
         image_index_list = [51, 3, 16, 50, 53, 47, 13, 52, 46, 45]+[108, 6, 109, 107, 115, 100, 106, 101, 137, 110]
