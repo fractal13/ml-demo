@@ -1,6 +1,7 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import tensorflow.keras as keras
+import numpy as np
 
 class MNIST:
 
@@ -92,6 +93,7 @@ class MNIST:
         return
     
 def main():
+    np.set_printoptions(linewidth=120)
     mnist = MNIST()
 
     # reshape and normalize the data
@@ -144,8 +146,13 @@ def main():
         mnist.show_train_images(image_index_list, rows)
 
     if show_one_image_data:
+        np.set_printoptions(precision=1)
+
         image_index = 45
-        print( mnist.get_train_image(image_index) )
+        image_data = mnist.get_train_image(image_index)
+        if len(image_data.shape) == 3:
+            image_data = image_data.reshape(image_data.shape[0],image_data.shape[1])
+        print(image_data)
 
     if show_data_shape:
         print("train:",mnist.get_train_data_shape())
