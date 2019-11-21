@@ -2,6 +2,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import tensorflow.keras as keras
 import numpy as np
+import PIL.Image
+import sys
 
 class MNIST:
 
@@ -85,12 +87,41 @@ class MNIST:
     def evaluate_network(self):
         return self.model.evaluate(self.x_test, self.y_test)
 
+    def predict(self,img):
+        img = img.reshape(1,28,28,1)
+        return self.model.predict(img)
+
     def save_network(self,filename):
         return self.model.save(filename)
 
     def load_network(self,filename):
         self.model = keras.models.load_model(filename)
         return
+    
+    def load_digit_image(self,filename):
+        #
+        # "L" converts to gray scale for us
+        #
+        img = PIL.Image.open(filename).convert("L")
+        img = img.resize((28,28),resample=PIL.Image.BILINEAR)
+        # scale to the same size as the training data
+        # 28,28 hard coded due to MNIST dataset
+        img = np.resize(img, (28,28))
+        img = img.astype('float32')
+        #
+        maximum = 0
+        minimum = 255
+        for row in range(28):
+            for col in range(28):
+                if img[row,col] > maximum:
+                    maximum = img[row,col]
+                if img[row,col] < minimum:
+                    minimum = img[row,col]
+
+        for row in range(28):
+            for col in range(28):
+                img[row,col] = (maximum - img[row,col]) / (maximum - minimum)
+        return img
     
 def main():
     np.set_printoptions(linewidth=120)
@@ -103,11 +134,14 @@ def main():
     # train network
     train_network = False
     # evaluate network
-    evaluate_network = True
+    evaluate_network = False
     # save network
     save_network = False
     # load network
     load_network = True
+
+    # predict our image
+    predict = True
 
     # images and answers
     show_training_data = False
@@ -137,6 +171,18 @@ def main():
         print("loss: ", loss)
         print("accuracy: ", accuracy)
 
+    if predict:
+        filename = "images/cgl-4.png"
+        filename = "images/cgl-8.png"
+        img = mnist.load_digit_image(filename)
+        plt.figure(999)
+        plt.imshow(img, cmap='Greys')
+        plt.show()
+
+        value = mnist.predict(img)
+        number = value.argmax()
+        print("predicted weights:", value)
+        print("Most likely:", number)
     
     if show_training_data:
         image_index_list = [51, 3, 16, 50, 53, 47, 13, 52, 46, 45]+[108, 6, 109, 107, 115, 100, 106, 101, 137, 110]
