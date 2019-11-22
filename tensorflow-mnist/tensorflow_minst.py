@@ -128,7 +128,7 @@ def main():
     mnist = MNIST()
 
     # reshape and normalize the data
-    prepare_data = True
+    prepare_data = False
     # create network
     create_network = False
     # train network
@@ -138,10 +138,10 @@ def main():
     # save network
     save_network = False
     # load network
-    load_network = True
+    load_network = False
 
     # predict our image
-    predict = True
+    predict = False
 
     # images and answers
     show_training_data = False
